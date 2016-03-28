@@ -17,7 +17,7 @@ import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.file.DirectoryScanner;
 import org.springframework.integration.file.FileReadingMessageSource;
-import org.springframework.integration.file.RecursiveLeafOnlyDirectoryScanner;
+import org.springframework.integration.file.WatchServiceDirectoryScanner;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileListFilter;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
@@ -51,10 +51,11 @@ public class IntegrationConfig {
 
 	@Bean
 	public DirectoryScanner dirScanner() throws Exception {
-		@SuppressWarnings("deprecation")
-		DirectoryScanner directoryScanner = new RecursiveLeafOnlyDirectoryScanner();
-		directoryScanner.setFilter(compositeFilter());
-		return directoryScanner;
+		WatchServiceDirectoryScanner watchServiceDirectoryScanner = new WatchServiceDirectoryScanner(
+				pollingDir);
+		watchServiceDirectoryScanner.setFilter(compositeFilter());
+		watchServiceDirectoryScanner.setAutoStartup(true);
+		return watchServiceDirectoryScanner;
 	}
 
 	@Bean
